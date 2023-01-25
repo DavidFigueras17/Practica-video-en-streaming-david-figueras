@@ -34,14 +34,14 @@ class CategoryExistsException extends VideoSystemException {
 
 class CategoryNotExistsException extends VideoSystemException {
 	constructor(fileName, lineNumber) {
-		super("Error: The category doesn't exist in the image manager.", fileName, lineNumber);
+		super("Error: The category doesn't exist in the  video system.", fileName, lineNumber);
 		this.name = "CategoryNotExistsException";
 	}
 }
 
 class ProductionException extends VideoSystemException {
 	constructor(fileName, lineNumber) {
-		super("Error: The method needs a Image parameter.", fileName, lineNumber);
+		super("Error: The method needs a production parameter.", fileName, lineNumber);
 		this.name = "ProductionExceptionException";
 	}
 }
@@ -58,6 +58,13 @@ class UserExistsException extends VideoSystemException {
         super("Error: The category exists in the video system.", fileName, lineNumber);
         this.name = "UserExistsException";
     }
+}
+
+class UserNotExistsException extends VideoSystemException {
+	constructor(fileName, lineNumber) {
+		super("Error: The category doesn't exist in the video system.", fileName, lineNumber);
+		this.name = "UserNotExistsException";
+	}
 }
 
 
@@ -408,7 +415,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             #actors = [];
             #directors = [];
 
-
+            #defaultUser = new User("David", "dfiguep@gmail.com", "1234"); //usuario por defecto
             #defaultCategory = new Category("Aventura", "indiana jones"); //Categoría por defecto	
             //Dado una categoría, devuelve la posición de esa categoría en el array de categorías o -1 si no lo encontramos.
             //Hemos elegido comparar por contenido no por referencia.
@@ -422,6 +429,18 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 }
 
                 return this.#categories.findIndex(compareElements);
+            }
+
+            #getUserPosition(user) {
+                if (!(user instanceof User)) {
+                    throw new UserException();
+                }
+
+                function compareElements(element) {
+                    return (element.user.email === user.email)
+                }
+
+                return this.#user.findIndex(compareElements);
             }
 
             //Dado una produccion, devuelve su posición 
@@ -440,7 +459,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
             constructor(name, user, productions, categories, actors, directors) {
                 this.#name = name;
-                // this.addUser(user);
+                this.addUser(this.#defaultUser);
                 // this.addProduction(productions);
                 this.addCategory(this.#defaultCategory);
                 // this.addActors(actors);
@@ -467,8 +486,19 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                     }
                 }
             }
+            get user() {
+                let nextIndex = 0;
+                let array = this.#user;
+                return {
+                    *[Symbol.iterator]() {
+                        for (let i = 0; i < array.length; i++) {
+                            yield array[i].user;
+                        }
+                    }
+                }
+            }
 
-            //Añade un nuevo autor al gestor
+            
 			addCategory(categories) {
 				if (!(categories instanceof Category)) {
 					throw new CategoryException();
@@ -520,6 +550,56 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 				return this;
 			}
 
+
+            addUser(user) {
+				if (!(user instanceof User)) {
+					throw new UserException();
+				}
+				let position = this.#getUserPosition(user);
+				if (position === -1) {
+					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+					this.#user.push(
+						{
+							user: user,
+							productions: []
+						}
+					);
+				} else {
+					throw new UserExistsException();
+				}
+
+				return this;
+			}
+
+            removeUser(user) {
+				if (!(user instanceof User)) {
+					throw new UserException();
+				}
+				let position = this.#getUserPosition(user);
+				if (position !== -1) {
+					
+						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+						let restPositions = Array.from(Array(this.#user.length), (el, i) => i);
+						restPositions.splice(position,1);
+						restPositions.splice(0,1);
+						// Recorremos todas las imágenes de la categoría que estamos borrando 
+						for(let production of this.#user[position].productions){
+							let insertInDefault = true;
+							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+								if (this.#getProductionPosition(production, this.#user[index].productions) > -1){
+									insertInDefault = false;
+									break;
+								}
+							}
+							if (insertInDefault) this.#user[0].productions.push(production);
+						}
+						this.#user.splice(position, 1);
+					
+				} else {
+					throw new UserNotExistsException();
+				}
+				return this;
+			}
 
         }
 
