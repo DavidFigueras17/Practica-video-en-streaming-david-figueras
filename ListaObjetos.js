@@ -32,6 +32,20 @@ class CategoryExistsException extends VideoSystemException {
     }
 }
 
+class CategoryNotExistsException extends VideoSystemException {
+	constructor(fileName, lineNumber) {
+		super("Error: The category doesn't exist in the image manager.", fileName, lineNumber);
+		this.name = "CategoryNotExistsException";
+	}
+}
+
+class ProductionException extends VideoSystemException {
+	constructor(fileName, lineNumber) {
+		super("Error: The method needs a Image parameter.", fileName, lineNumber);
+		this.name = "ProductionExceptionException";
+	}
+}
+
 class UserException extends VideoSystemException {
     constructor(fileName, lineNumber) {
         super("Error: The method needs a user parameter.", fileName, lineNumber);
@@ -382,7 +396,7 @@ class User {
 
 
 let VideoSystem = (function () { //La función anónima devuelve un método getInstance que permite obtener el objeto único
-    let instantiated; //Objeto con la instancia única ImageManager
+    let instantiated; //Objeto con la instancia única 
 
     function init() { //Inicialización del Singleton
 
@@ -395,40 +409,42 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             #directors = [];
 
 
+            #defaultCategory = new Category("Aventura", "indiana jones"); //Categoría por defecto	
             //Dado una categoría, devuelve la posición de esa categoría en el array de categorías o -1 si no lo encontramos.
             //Hemos elegido comparar por contenido no por referencia.
-            #getCategoryPosition(categories) {
-                if (!(categories instanceof Category)) {
+            #getCategoryPosition(category) {
+                if (!(category instanceof Category)) {
                     throw new CategoryException();
                 }
 
                 function compareElements(element) {
-                    return (element.categories.name === categories.name)
+                    return (element.category.name === category.name)
                 }
 
                 return this.#categories.findIndex(compareElements);
             }
 
-            #getUsersPosition(user) {
-                if (!(user instanceof User)) {
-                    throw new UserException();
-                }
+            //Dado una produccion, devuelve su posición 
+			//Hemos elegido comparar por contenido no por referencia.
+			#getProductionPosition(production, productions = this.#productions) {
+				if (!(production instanceof Production)) {
+					throw new ProductionException();
+				}
 
-                function compareElements(element) {
-                    return (element.categories.name === categories.name)
-                }
+				function compareElements(element) {
+					return (element.tittle === production.tittle)
+				}
 
-                return this.#categories.findIndex(compareElements);
-            }
-
+				return productions.findIndex(compareElements);
+			}
 
             constructor(name, user, productions, categories, actors, directors) {
                 this.#name = name;
-                this.addUser(user);
-                this.addProduction(productions);
-                this.addCategories(categories);
-                this.addActors(actors);
-                this.addDirectors(directors);
+                // this.addUser(user);
+                // this.addProduction(productions);
+                this.addCategory(this.#defaultCategory);
+                // this.addActors(actors);
+                // this.addDirectors(directors);
 
             }
 
@@ -442,77 +458,92 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
             get categories() {
                 let nextIndex = 0;
-                // referencia para habilitar el closure en el objeto
                 let array = this.#categories;
                 return {
                     *[Symbol.iterator]() {
                         for (let i = 0; i < array.length; i++) {
-                            yield array[i].categories;
+                            yield array[i].category;
                         }
                     }
                 }
             }
-            //Añade un nuevo autor al gestor
-            addCategories(categories) {
-                if (!(categories instanceof Category)) {
-                    throw new CategoryException();
-                }
-                let position = this.#getCategoryPosition(categories);
-                if (position === -1) {
-                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
-                    this.#categories.push(
-                        {
-                            categories: categories,
-                            images: []
-                        }
-                    );
-                } else {
-                    throw new CategoryExistsException();
-                }
 
-                return this;
-            }
+            //Añade un nuevo autor al gestor
+			addCategory(categories) {
+				if (!(categories instanceof Category)) {
+					throw new CategoryException();
+				}
+				let position = this.#getCategoryPosition(categories);
+				if (position === -1) {
+					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+					this.#categories.push(
+						{
+							category: categories,
+							productions: []
+						}
+					);
+				} else {
+					throw new CategoryExistsException();
+				}
+
+				return this;
+			}
 
             //Elimina una categoría del gestor
-            removeCategory(categories) {
-                if (!(categories instanceof Category)) {
-                    throw new CategoryException();
-                }
-                let position = this.#getCategoryPosition(categories);
-                if (position !== -1) {
+			removeCategory(category) {
+				if (!(category instanceof Category)) {
+					throw new CategoryException();
+				}
+				let position = this.#getCategoryPosition(category);
+				if (position !== -1) {
+					
+						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+						let restPositions = Array.from(Array(this.#categories.length), (el, i) => i);
+						restPositions.splice(position,1);
+						restPositions.splice(0,1);
+						// Recorremos todas las imágenes de la categoría que estamos borrando 
+						for(let production of this.#categories[position].productions){
+							let insertInDefault = true;
+							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+								if (this.#getProductionPosition(production, this.#categories[index].productions) > -1){
+									insertInDefault = false;
+									break;
+								}
+							}
+							if (insertInDefault) this.#categories[0].productions.push(production);
+						}
+						this.#categories.splice(position, 1);
+					
+				} else {
+					throw new CategoryNotExistsException();
+				}
+				return this;
+			}
 
 
-                    let restPositions = Array.from(Array(this.#categories.length), (el, i) => i);
-                    restPositions.splice(position, 1);
-                    restPositions.splice(0, 1);
-                    this.#categories.splice(position, 1);
-               
-            } else {
-            throw new CategoryNotExistsImageManagerException();
         }
-        return this;
-    }
-}
 
-        
-let instance = new VideoSystem();
-Object.freeze(instance);
-return instance;
-	} //Fin inicialización del Singleton
-return {
-    // Devuelve un objeto con el método getInstance
-    getInstance: function () {
-        if (!instantiated) { //Si la variable instantiated es undefined, priemera ejecución, ejecuta init.
-            instantiated = init(); //instantiated contiene el objeto único
+
+        let instance = new VideoSystem();
+        Object.freeze(instance);
+        return instance;
+    } 
+    return {
+        // Devuelve un objeto con el método getInstance
+        getInstance: function () {
+            if (!instantiated) { //Si la variable instantiated es undefined, priemera ejecución, ejecuta init.
+                instantiated = init(); //instantiated contiene el objeto único
+            }
+            return instantiated; //Si ya está asignado devuelve la asignación.
         }
-        return instantiated; //Si ya está asignado devuelve la asignación.
-    }
-};
+    };
 
-    
-});
+
+})();
 
 
 
 
 export { Person, Category, Resource, Production, Coords, Movie, Serie, User };
+export {VideoSystemException, CategoryException,CategoryExistsException, CategoryNotExistsException, ProductionException};
+export default VideoSystem ;
