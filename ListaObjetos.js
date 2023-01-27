@@ -33,17 +33,17 @@ class CategoryExistsException extends VideoSystemException {
 }
 
 class CategoryNotExistsException extends VideoSystemException {
-	constructor(fileName, lineNumber) {
-		super("Error: The production doesn't exist in the  video system.", fileName, lineNumber);
-		this.name = "CategoryNotExistsException";
-	}
+    constructor(fileName, lineNumber) {
+        super("Error: The production doesn't exist in the  video system.", fileName, lineNumber);
+        this.name = "CategoryNotExistsException";
+    }
 }
 
 class ProductionException extends VideoSystemException {
-	constructor(fileName, lineNumber) {
-		super("Error: The method needs a production parameter.", fileName, lineNumber);
-		this.name = "ProductionExceptionException";
-	}
+    constructor(fileName, lineNumber) {
+        super("Error: The method needs a production parameter.", fileName, lineNumber);
+        this.name = "ProductionExceptionException";
+    }
 }
 
 class ProductionExistsException extends VideoSystemException {
@@ -54,10 +54,10 @@ class ProductionExistsException extends VideoSystemException {
 }
 
 class ProductionNotExistsException extends VideoSystemException {
-	constructor(fileName, lineNumber) {
-		super("Error: The prod doesn't exist in the video system.", fileName, lineNumber);
-		this.name = "ProductionNotExistsException";
-	}
+    constructor(fileName, lineNumber) {
+        super("Error: The prod doesn't exist in the video system.", fileName, lineNumber);
+        this.name = "ProductionNotExistsException";
+    }
 }
 
 class UserException extends VideoSystemException {
@@ -75,10 +75,10 @@ class UserExistsException extends VideoSystemException {
 }
 
 class UserNotExistsException extends VideoSystemException {
-	constructor(fileName, lineNumber) {
-		super("Error: The user doesn't exist in the video system.", fileName, lineNumber);
-		this.name = "UserNotExistsException";
-	}
+    constructor(fileName, lineNumber) {
+        super("Error: The user doesn't exist in the video system.", fileName, lineNumber);
+        this.name = "UserNotExistsException";
+    }
 }
 
 class PersonException extends VideoSystemException {
@@ -96,10 +96,10 @@ class PersonExistsException extends VideoSystemException {
 }
 
 class PersonNotExistsException extends VideoSystemException {
-	constructor(fileName, lineNumber) {
-		super("Error: The person doesn't exist in the video system.", fileName, lineNumber);
-		this.name = "PersonNotExistsException";
-	}
+    constructor(fileName, lineNumber) {
+        super("Error: The person doesn't exist in the video system.", fileName, lineNumber);
+        this.name = "PersonNotExistsException";
+    }
 }
 
 
@@ -451,8 +451,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
             #defaultUser = new User("David", "dfiguep@gmail.com", "1234"); //usuario por defecto
             #defaultCategory = new Category("Aventura", "indiana jones"); //Categoría por defecto	
-            #defaultActor= new Person("Juan", "Nolan", "Nolan", "23/05/1980", "www.google.es");
-            #defaultDirectors= new Person("Christopher", "Nolan", "Nolan", "23/05/1980", "www.google.es");
+            #defaultActor = new Person("Alfredo", "Nolan", "Nolan", "23/05/1980", "www.google.es");
+            #defaultDirectors = new Person("Christopher", "Nolan", "Nolan", "23/05/1980", "www.google.es");
             #defaultProd = new Movie("Avatar", "USA", "24-7-95", "Viaje por el espacio", "www.google.es");
             //Dado una categoría, devuelve la posición de esa categoría en el array de categorías o -1 si no lo encontramos.
             //Hemos elegido comparar por contenido no por referencia.
@@ -481,18 +481,18 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
             //Dado una produccion, devuelve su posición 
-			//Hemos elegido comparar por contenido no por referencia.
-			#getProductionPosition(production, productions= this.#productions) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
+            //Hemos elegido comparar por contenido no por referencia.
+            #getProductionPosition(production, productions = this.#productions) {
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
 
-				function compareElements(element) {
-					return (element.title === production.title)
-				}
+                function compareElements(element) {
+                    return (element.title === production.title)
+                }
 
-				return productions.findIndex(compareElements);
-			}
+                return productions.findIndex(compareElements);
+            }
 
             #getActorPosition(actors) {
                 if (!(actors instanceof Person)) {
@@ -525,7 +525,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 this.addActors(this.#defaultActor);
                 this.addDirectors(this.#defaultDirectors);
                 this.addProds(this.#defaultProd);
-                
+
             }
 
             get name() {
@@ -589,415 +589,528 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return {
                     *[Symbol.iterator]() {
                         for (let i = 0; i < array.length; i++) {
-                            yield array[i].productions;
+                            yield array[i];
                         }
                     }
                 }
             }
 
-            
-			addCategory(categories) {
-				if (!(categories instanceof Category)) {
-					throw new CategoryException();
-				}
-				let position = this.#getCategoryPosition(categories);
-				if (position === -1) {
-					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
-					this.#categories.push(
-						{
-							category: categories,
-							productions: []
-						}
-					);
-				} else {
-					throw new CategoryExistsException();
-				}
 
-				return this;
-			}
+            addCategory(categories) {
+                if (!(categories instanceof Category)) {
+                    throw new CategoryException();
+                }
+                let position = this.#getCategoryPosition(categories);
+                if (position === -1) {
+                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    this.#categories.push(
+                        {
+                            category: categories,
+                            productions: []
+                        }
+                    );
+                } else {
+                    throw new CategoryExistsException();
+                }
+
+                return this;
+            }
 
             //Elimina una categoría del gestor
-			removeCategory(category) {
-				if (!(category instanceof Category)) {
-					throw new CategoryException();
-				}
-				let position = this.#getCategoryPosition(category);
-				if (position !== -1) {
-					
-						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
-						let restPositions = Array.from(Array(this.#categories.length), (el, i) => i);
-						restPositions.splice(position,1);
-						restPositions.splice(0,1);
-						// Recorremos todas las imágenes de la categoría que estamos borrando 
-						for(let production of this.#categories[position].productions){
-							let insertInDefault = true;
-							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
-								if (this.#getProductionPosition(production, this.#categories[index].productions) > -1){
-									insertInDefault = false;
-									break;
-								}
-							}
-							if (insertInDefault) this.#categories[0].productions.push(production);
-						}
-						this.#categories.splice(position, 1);
-					
-				} else {
-					throw new CategoryNotExistsException();
-				}
-				return this;
-			}
+            removeCategory(category) {
+                if (!(category instanceof Category)) {
+                    throw new CategoryException();
+                }
+                let position = this.#getCategoryPosition(category);
+                if (position !== -1) {
+
+                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    let restPositions = Array.from(Array(this.#categories.length), (el, i) => i);
+                    restPositions.splice(position, 1);
+                    restPositions.splice(0, 1);
+                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    for (let production of this.#categories[position].productions) {
+                        let insertInDefault = true;
+                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                            if (this.#getProductionPosition(production, this.#categories[index].productions) > -1) {
+                                insertInDefault = false;
+                                break;
+                            }
+                        }
+                        if (insertInDefault) this.#categories[0].productions.push(production);
+                    }
+                    this.#categories.splice(position, 1);
+
+                } else {
+                    throw new CategoryNotExistsException();
+                }
+                return this;
+            }
 
 
             addUser(user) {
-				if (!(user instanceof User)) {
-					throw new UserException();
-				}
-				let position = this.#getUserPosition(user);
-				if (position === -1) {
-					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
-					this.#user.push(
-						{
-							user: user,
-							productions: []
-						}
-					);
-				} else {
-					throw new UserExistsException();
-				}
+                if (!(user instanceof User)) {
+                    throw new UserException();
+                }
+                let position = this.#getUserPosition(user);
+                if (position === -1) {
+                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    this.#user.push(
+                        {
+                            user: user,
+                            productions: []
+                        }
+                    );
+                } else {
+                    throw new UserExistsException();
+                }
 
-				return this;
-			}
+                return this;
+            }
 
             removeUser(user) {
-				if (!(user instanceof User)) {
-					throw new UserException();
-				}
-				let position = this.#getUserPosition(user);
-				if (position !== -1) {
-					
-						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
-						let restPositions = Array.from(Array(this.#user.length), (el, i) => i);
-						restPositions.splice(position,1);
-						restPositions.splice(0,1);
-						// Recorremos todas las imágenes de la categoría que estamos borrando 
-						for(let production of this.#user[position].productions){
-							let insertInDefault = true;
-							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
-								if (this.#getProductionPosition(production, this.#user[index].productions) > -1){
-									insertInDefault = false;
-									break;
-								}
-							}
-							if (insertInDefault) this.#user[0].productions.push(production);
-						}
-						this.#user.splice(position, 1);
-					
-				} else {
-					throw new UserNotExistsException();
-				}
-				return this;
-			}
+                if (!(user instanceof User)) {
+                    throw new UserException();
+                }
+                let position = this.#getUserPosition(user);
+                if (position !== -1) {
+
+                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    let restPositions = Array.from(Array(this.#user.length), (el, i) => i);
+                    restPositions.splice(position, 1);
+                    restPositions.splice(0, 1);
+                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    for (let production of this.#user[position].productions) {
+                        let insertInDefault = true;
+                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                            if (this.#getProductionPosition(production, this.#user[index].productions) > -1) {
+                                insertInDefault = false;
+                                break;
+                            }
+                        }
+                        if (insertInDefault) this.#user[0].productions.push(production);
+                    }
+                    this.#user.splice(position, 1);
+
+                } else {
+                    throw new UserNotExistsException();
+                }
+                return this;
+            }
 
             addProds(production) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
 
 
-                for (let prod of this.#productions){
-                    if(prod.title===production.title){
+                for (let prod of this.#productions) {
+                    if (prod.title === production.title) {
                         throw new ProductionExistsException();
                     }
                 }
 
                 this.#productions.push(production);
-				return this.#productions.length;
-			}
+                return this.#productions.length;
+            }
 
             removeProd(production) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
-				let position = this.#getProductionPosition(production);
-				if (position !== -1) {
-					
-						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
-						let restPositions = Array.from(Array(this.#productions.length), (el, i) => i);
-						restPositions.splice(position,1);
-						restPositions.splice(0,1);
-						
-						this.#productions.splice(position, 1);
-					
-				} else {
-					throw new ProductionNotExistsException();
-				}
-				return this;
-			}
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                let position = this.#getProductionPosition(production);
+                if (position !== -1) {
+
+                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    let restPositions = Array.from(Array(this.#productions.length), (el, i) => i);
+                    restPositions.splice(position, 1);
+                    restPositions.splice(0, 1);
+
+                    this.#productions.splice(position, 1);
+
+                } else {
+                    throw new ProductionNotExistsException();
+                }
+                return this;
+            }
 
 
             assingCategory(production, category = this.defaultCategory) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
-				if (!(category instanceof Category)) {
-					throw new CategoryException();
-				}
-				
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(category instanceof Category)) {
+                    throw new CategoryException();
+                }
 
-				//Obtenemos posición de la categoría. Si no existe se añade.
-				let categoryPosition = this.#getCategoryPosition(category);
-				if (categoryPosition === -1) {
-					categoryPosition = this.addCategory(category) - 1;
-				}
 
-				
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let categoryPosition = this.#getCategoryPosition(category);
+                if (categoryPosition === -1) {
+                    categoryPosition = this.addCategory(category) - 1;
+                }
 
-				//Obtenemos posición de la imagen. Si no existe se añade.
-				let ProductionPosition = this.#getProductionPosition(production);
-				if (ProductionPosition === -1) {
-					this.#productions.push (production);
-					ProductionPosition = this.#productions.length -1;
-				}
 
-						
 
-				 if (this.#getProductionPosition(production, this.#categories[categoryPosition].productions) === -1){
+                //Obtenemos posición de la imagen. Si no existe se añade.
+                let ProductionPosition = this.#getProductionPosition(production);
+                if (ProductionPosition === -1) {
+                    this.#productions.push(production);
+                    ProductionPosition = this.#productions.length - 1;
+                }
+
+
+
+                if (this.#getProductionPosition(production, this.#categories[categoryPosition].productions) === -1) {
                     this.#categories[categoryPosition].productions.push(this.#productions[ProductionPosition]);
-                 }
-					
-				
+                }
 
-				return this;
-			}
+
+
+                return this;
+            }
+
+            DeassingCategory(production, category = this.defaultCategory) {
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(category instanceof Category)) {
+                    throw new CategoryException();
+                }
+
+
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let categoryPosition = this.#getCategoryPosition(category);
+
+
+
+                //Obtenemos posición de la prod. Si no existe se añade.
+                let posicion = this.#categories[categoryPosition].productions.findIndex((p) => { return p.title == production.title });
+
+
+
+                if (categoryPosition !== -1) {
+                    this.#categories[categoryPosition].productions.splice(posicion, 1);
+                }
+
+
+
+                return this;
+            }
+
 
             assignDirector(production, director = this.defaultDirectors) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
-				if (!(director instanceof Person)) {
-					throw new PersonException();
-				}
-				
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(director instanceof Person)) {
+                    throw new PersonException();
+                }
 
-				//Obtenemos posición de la categoría. Si no existe se añade.
-				let directorPosition = this.#getDirectorPosition(director);
-				if (directorPosition === -1) {
-					directorPosition = this.addDirectors(director) - 1;
-				}
 
-				
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let directorPosition = this.#getDirectorPosition(director);
+                if (directorPosition === -1) {
+                    directorPosition = this.addDirectors(director) - 1;
+                }
 
-				//Obtenemos posición de la imagen. Si no existe se añade.
-				let ProductionPosition = this.#getProductionPosition(production);
-				if (ProductionPosition === -1) {
-					this.#productions.push (production);
-					ProductionPosition = this.#productions.length -1;
-				}
 
-						
 
-				 if (this.#getProductionPosition(production, this.#directors[directorPosition].productions) === -1){
+                //Obtenemos posición de la imagen. Si no existe se añade.
+                let ProductionPosition = this.#getProductionPosition(production);
+                if (ProductionPosition === -1) {
+                    this.#productions.push(production);
+                    ProductionPosition = this.#productions.length - 1;
+                }
+
+
+
+                if (this.#getProductionPosition(production, this.#directors[directorPosition].productions) === -1) {
                     this.#directors[directorPosition].productions.push(this.#productions[ProductionPosition]);
-                 }
-					
-				
+                }
 
-				return this;
-			}
+
+
+                return this;
+            }
+
+
+            DeassignDirector(production, director = this.defaultDirectors) {
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(director instanceof Person)) {
+                    throw new PersonException();
+                }
+
+
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let directorPosition = this.#getDirectorPosition(director);
+
+
+
+
+                //Obtenemos posición de la prod. Si no existe se añade.
+                let posicion = this.#directors[directorPosition].productions.findIndex((p) => { return p.title == production.title });
+
+
+
+                if (directorPosition !== -1) {
+                    this.#directors[directorPosition].productions.splice(posicion, 1);
+                }
+
+
+
+                return this;
+            }
 
             assignActor(production, actor = this.defaultActor) {
-				if (!(production instanceof Production)) {
-					throw new ProductionException();
-				}
-				if (!(actor instanceof Person)) {
-					throw new PersonException();
-				}
-				
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(actor instanceof Person)) {
+                    throw new PersonException();
+                }
 
-				//Obtenemos posición de la categoría. Si no existe se añade.
-				let actorPosition = this.#getActorPosition(actor);
-				if (actorPosition === -1) {
-					actorPosition = this.addActor(actor) - 1;
-				}
 
-				
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let actorPosition = this.#getActorPosition(actor);
+                if (actorPosition === -1) {
+                    actorPosition = this.addActor(actor) - 1;
+                }
 
-				//Obtenemos posición de la imagen. Si no existe se añade.
-				let ProductionPosition = this.#getProductionPosition(production);
-				if (ProductionPosition === -1) {
-					this.#productions.push (production);
-					ProductionPosition = this.#productions.length -1;
-				}
 
-						
 
-				 if (this.#getProductionPosition(production, this.#actors[actorPosition].productions) === -1){
+                //Obtenemos posición de la imagen. Si no existe se añade.
+                let ProductionPosition = this.#getProductionPosition(production);
+                if (ProductionPosition === -1) {
+                    this.#productions.push(production);
+                    ProductionPosition = this.#productions.length - 1;
+                }
+
+
+
+                if (this.#getProductionPosition(production, this.#actors[actorPosition].productions) === -1) {
                     this.#actors[actorPosition].productions.push(this.#productions[ProductionPosition]);
-                 }
-					
-				
+                }
 
-				return this;
-			}
+
+
+                return this;
+            }
+
+            DeassignActor(production, actor = this.defaultActor) {
+                if (!(production instanceof Production)) {
+                    throw new ProductionException();
+                }
+                if (!(actor instanceof Person)) {
+                    throw new PersonException();
+                }
+
+
+                //Obtenemos posición de la categoría. Si no existe se añade.
+                let actorPosition = this.#getActorPosition(actor);
+
+
+
+
+                //Obtenemos posición de la prod. Si no existe se añade.
+                let posicion = this.#actors[actorPosition].productions.findIndex((p) => { return p.title == production.title });
+
+
+
+                if (actorPosition !== -1) {
+                    this.#actors[actorPosition].productions.splice(posicion, 1);
+                }
+
+
+
+
+
+                return this;
+            }
 
 
             //Devuelve todas las imágenes de una determinada categoría
-			* getProdsByCategory(category) {
-				if (!(category instanceof Category)) {
-					throw new CategoryException();
-				}
-				let categoryPosition = this.#getCategoryPosition(category);
-				if (categoryPosition === -1) throw new CategoryNotExistsException();
-				// Iteramos sobre el array de prods de la categoría encontrada
-				for (let prod of this.#categories[categoryPosition].productions){
-					yield prod;
-				}
-               
-			}
+            * getProdsByCategory(category) {
+                if (!(category instanceof Category)) {
+                    throw new CategoryException();
+                }
+                let categoryPosition = this.#getCategoryPosition(category);
+                if (categoryPosition === -1) throw new CategoryNotExistsException();
+                // Iteramos sobre el array de prods de la categoría encontrada
+                for (let prod of this.#categories[categoryPosition].productions) {
+                    yield prod;
+                }
+
+            }
 
             * getProdsByDirector(director) {
-            if (!(director instanceof Person)) {
-                throw new PersonException();
+                if (!(director instanceof Person)) {
+                    throw new PersonException();
+                }
+                let directorPosition = this.#getDirectorPosition(director);
+                if (directorPosition === -1) throw new PersonNotExistsException();
+                // Iteramos sobre el array de prods de la categoría encontrada
+                for (let prod of this.#directors[directorPosition].productions) {
+                    yield prod;
+                }
             }
-            let directorPosition = this.#getDirectorPosition(director);
-            if (directorPosition === -1) throw new PersonNotExistsException();
-            // Iteramos sobre el array de prods de la categoría encontrada
-            for (let prod of this.#directors[directorPosition].productions){
-                yield prod;
+
+
+
+            * getProdsByActor(actor) {
+                if (!(actor instanceof Person)) {
+                    throw new PersonException();
+                }
+                let actorPosition = this.#getActorPosition(actor);
+                if (actorPosition === -1) throw new PersonNotExistsException();
+                // Iteramos sobre el array de prods de la categoría encontrada
+                for (let prod of this.#actors[actorPosition].productions) {
+                    yield prod;
+                }
             }
-        }
+
+            //LA DE ARRIBA AL REVES tiene que darme los actores de una prod
+
+            * getCastByProd(prod) {
+                if (!(prod instanceof Production)) {
+                    throw new ProductionException();
+                }
+                let array = [];
+
+                this.#actors.forEach(production => {
+                    let posicion = production.productions.findIndex((p) => { return p.title == prod.title });
+
+                    if (posicion != -1) {
+                        array.push(production.actors);
+
+                    }
 
 
-       
-        * getProdsByActor(actor) {
-        if (!(actor instanceof Person)) {
-            throw new PersonException();
-        }
-        let actorPosition = this.#getActorPosition(actor);
-        if (actorPosition === -1) throw new PersonNotExistsException();
-        // Iteramos sobre el array de prods de la categoría encontrada
-        for (let prod of this.#actors[actorPosition].productions){
-            yield prod;
-        }
-    }
+                });
+                let prodPosition = this.#getProductionPosition(prod);
+                if (prodPosition === -1) throw new ProductionNotExistsException();
+                // Iteramos sobre el array de prods de la categoría encontrada
+                for (let actor of array) {
+                    yield actor;
+                }
+            }
 
-     //LA DE ARRIBA AL REVES tiene que darme los actores de una prod
 
-    
 
-           
 
 
             addActors(actors) {
-				if (!(actors instanceof Person)) {
-					throw new PersonException();
-				}
-				let position = this.#getActorPosition(actors);
-				if (position === -1) {
-					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
-					this.#actors.push(
-						{
-							actors: actors,
-							productions: []
-						}
-					);
-				} else {
-					throw new PersonExistsException();
-				}
+                if (!(actors instanceof Person)) {
+                    throw new PersonException();
+                }
+                let position = this.#getActorPosition(actors);
+                if (position === -1) {
+                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    this.#actors.push(
+                        {
+                            actors: actors,
+                            productions: []
+                        }
+                    );
+                } else {
+                    throw new PersonExistsException();
+                }
 
-				return this;
-			}
+                return this;
+            }
 
             removeActors(actors) {
-				if (!(actors instanceof Person)) {
-					throw new PersonException();
-				}
-				let position = this.#getActorPosition(actors);
-				if (position !== -1) {
-					
-						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
-						let restPositions = Array.from(Array(this.#actors.length), (el, i) => i);
-						restPositions.splice(position,1);
-						restPositions.splice(0,1);
-						// Recorremos todas las imágenes de la categoría que estamos borrando 
-						for(let production of this.#actors[position].productions){
-							let insertInDefault = true;
-							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
-								if (this.#getProductionPosition(production, this.#actors[index].productions) > -1){
-									insertInDefault = false;
-									break;
-								}
-							}
-							if (insertInDefault) this.#actors[0].productions.push(production);
-						}
-						this.#actors.splice(position, 1);
-					
-				} else {
-					throw new PersonNotExistsException();
-				}
-				return this;
-			}
+                if (!(actors instanceof Person)) {
+                    throw new PersonException();
+                }
+                let position = this.#getActorPosition(actors);
+                if (position !== -1) {
+
+                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    let restPositions = Array.from(Array(this.#actors.length), (el, i) => i);
+                    restPositions.splice(position, 1);
+                    restPositions.splice(0, 1);
+                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    for (let production of this.#actors[position].productions) {
+                        let insertInDefault = true;
+                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                            if (this.#getProductionPosition(production, this.#actors[index].productions) > -1) {
+                                insertInDefault = false;
+                                break;
+                            }
+                        }
+                        if (insertInDefault) this.#actors[0].productions.push(production);
+                    }
+                    this.#actors.splice(position, 1);
+
+                } else {
+                    throw new PersonNotExistsException();
+                }
+                return this;
+            }
 
 
             addDirectors(directors) {
-				if (!(directors instanceof Person)) {
-					throw new PersonException();
-				}
-				let position = this.#getDirectorPosition(directors);
-				if (position === -1) {
-					// Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
-					this.#directors.push(
-						{
-							directors: directors,
-							productions: []
-						}
-					);
-				} else {
-					throw new PersonExistsException();
-				}
+                if (!(directors instanceof Person)) {
+                    throw new PersonException();
+                }
+                let position = this.#getDirectorPosition(directors);
+                if (position === -1) {
+                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    this.#directors.push(
+                        {
+                            directors: directors,
+                            productions: []
+                        }
+                    );
+                } else {
+                    throw new PersonExistsException();
+                }
 
-				return this;
-			}
+                return this;
+            }
 
             removeDirectors(directors) {
-				if (!(directors instanceof Person)) {
-					throw new PersonException();
-				}
-				let position = this.#getDirectorPosition(directors);
-				if (position !== -1) {
-					
-						// Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
-						let restPositions = Array.from(Array(this.#directors.length), (el, i) => i);
-						restPositions.splice(position,1);
-						restPositions.splice(0,1);
-						// Recorremos todas las imágenes de la categoría que estamos borrando 
-						for(let production of this.#directors[position].productions){
-							let insertInDefault = true;
-							for(let index of restPositions){ // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
-								if (this.#getProductionPosition(production, this.#directors[index].productions) > -1){
-									insertInDefault = false;
-									break;
-								}
-							}
-							if (insertInDefault) this.#directors[0].productions.push(production);
-						}
-						this.#directors.splice(position, 1);
-					
-				} else {
-					throw new PersonNotExistsException();
-				}
-				return this;
-			}
-        }
-        
+                if (!(directors instanceof Person)) {
+                    throw new PersonException();
+                }
+                let position = this.#getDirectorPosition(directors);
+                if (position !== -1) {
 
-        
+                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    let restPositions = Array.from(Array(this.#directors.length), (el, i) => i);
+                    restPositions.splice(position, 1);
+                    restPositions.splice(0, 1);
+                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    for (let production of this.#directors[position].productions) {
+                        let insertInDefault = true;
+                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                            if (this.#getProductionPosition(production, this.#directors[index].productions) > -1) {
+                                insertInDefault = false;
+                                break;
+                            }
+                        }
+                        if (insertInDefault) this.#directors[0].productions.push(production);
+                    }
+                    this.#directors.splice(position, 1);
+
+                } else {
+                    throw new PersonNotExistsException();
+                }
+                return this;
+            }
+        }
+
+
+
 
 
         let instance = new VideoSystem();
         Object.freeze(instance);
         return instance;
-    } 
+    }
     return {
         // Devuelve un objeto con el método getInstance
         getInstance: function () {
@@ -1015,5 +1128,5 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
 
 export { Person, Category, Resource, Production, Coords, Movie, Serie, User };
-export {VideoSystemException, CategoryException,CategoryExistsException, CategoryNotExistsException, ProductionException};
-export default VideoSystem ;
+export { VideoSystemException, CategoryException, CategoryExistsException, CategoryNotExistsException, ProductionException };
+export default VideoSystem;
