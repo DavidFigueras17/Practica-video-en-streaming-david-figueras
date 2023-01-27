@@ -66,7 +66,7 @@ function test() {
     console.log(...sistema.production);
 
     
-    console.log(...sistema.production);
+    
 
     sistema.assingCategory(peli, categoria);
     sistema.assingCategory(peli, categoria2);
@@ -123,14 +123,19 @@ function test() {
 
 
     sistema.removeProd(peli);
+    console.log("Comprobacion del remove de producciones:")
     console.log("##### Produciones por categoria: " + categoria.name);
     showProds(sistema.getProdsByCategory(categoria));
     sistema.removeCategory(categoria);
     sistema.removeUser(usuario);
     sistema.removeActors(actor);
-    
-    
     sistema.removeDirectors(director);
+    console.log("Comprobaciones de los remove:")
+    console.log(...sistema.categories);
+    console.log(...sistema.user);
+    console.log(...sistema.actors);
+    console.log(...sistema.director);
+    console.log(...sistema.production);
 
 }
 window.onload = test;

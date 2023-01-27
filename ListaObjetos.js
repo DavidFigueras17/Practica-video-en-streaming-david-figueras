@@ -451,9 +451,10 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
             #defaultUser = new User("David", "dfiguep@gmail.com", "1234"); //usuario por defecto
             #defaultCategory = new Category("Aventura", "indiana jones"); //Categoría por defecto	
-            #defaultActor = new Person("Alfredo", "Nolan", "Nolan", "23/05/1980", "www.google.es");
-            #defaultDirectors = new Person("Christopher", "Nolan", "Nolan", "23/05/1980", "www.google.es");
-            #defaultProd = new Movie("Avatar", "USA", "24-7-95", "Viaje por el espacio", "www.google.es");
+            #defaultActor = new Person("Alfredo", "Nolan", "Nolan", "23/05/1980", "www.google.es");  //actor por defecto
+            #defaultDirectors = new Person("Christopher", "Nolan", "Nolan", "23/05/1980", "www.google.es"); //director por defecto
+            #defaultProd = new Movie("Avatar", "USA", "24-7-95", "Viaje por el espacio", "www.google.es"); //prod por defecto
+
             //Dado una categoría, devuelve la posición de esa categoría en el array de categorías o -1 si no lo encontramos.
             //Hemos elegido comparar por contenido no por referencia.
             #getCategoryPosition(category) {
@@ -468,6 +469,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this.#categories.findIndex(compareElements);
             }
 
+            //Dado un usuario, devuelve su posición 
             #getUserPosition(user) {
                 if (!(user instanceof User)) {
                     throw new UserException();
@@ -494,6 +496,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return productions.findIndex(compareElements);
             }
 
+
+            //Dado un actor, devuelve su posición 
             #getActorPosition(actors) {
                 if (!(actors instanceof Person)) {
                     throw new PersonException();
@@ -506,6 +510,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this.#actors.findIndex(compareElements);
             }
 
+            //Dado un director, devuelve su posición 
             #getDirectorPosition(directors) {
                 if (!(directors instanceof Person)) {
                     throw new PersonException();
@@ -518,7 +523,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this.#directors.findIndex(compareElements);
             }
 
-            constructor(name, user, productions, categories, actors, directors) {
+            constructor(name) {
                 this.#name = name;
                 this.addUser(this.#defaultUser);
                 this.addCategory(this.#defaultCategory);
@@ -536,6 +541,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 this.#name = value;
             }
 
+            //iterador para las categorias
             get categories() {
                 let nextIndex = 0;
                 let array = this.#categories;
@@ -547,6 +553,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                     }
                 }
             }
+
+            //iterador para los usuarios
             get user() {
                 let nextIndex = 0;
                 let array = this.#user;
@@ -559,6 +567,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 }
             }
 
+            //iterador para los actores
             get actors() {
                 let nextIndex = 0;
                 let array = this.#actors;
@@ -571,6 +580,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 }
             }
 
+            //iterador para los directores
             get director() {
                 let nextIndex = 0;
                 let array = this.#directors;
@@ -583,6 +593,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 }
             }
 
+            //iterador para las producciones
             get production() {
                 let nextIndex = 0;
                 let array = this.#productions;
@@ -596,13 +607,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
+            //funcion en la que añado una categoria
             addCategory(categories) {
                 if (!(categories instanceof Category)) {
                     throw new CategoryException();
                 }
                 let position = this.#getCategoryPosition(categories);
                 if (position === -1) {
-                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    // Añade objeto literal con una propiedad para la categoría y un array para las prod dentro de la categoría
                     this.#categories.push(
                         {
                             category: categories,
@@ -616,7 +628,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
-            //Elimina una categoría del gestor
+            //Elimina una categoría del sistema
             removeCategory(category) {
                 if (!(category instanceof Category)) {
                     throw new CategoryException();
@@ -628,10 +640,10 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                     let restPositions = Array.from(Array(this.#categories.length), (el, i) => i);
                     restPositions.splice(position, 1);
                     restPositions.splice(0, 1);
-                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    // Recorremos todas las producciones de la categoría que estamos borrando 
                     for (let production of this.#categories[position].productions) {
                         let insertInDefault = true;
-                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                        for (let index of restPositions) { // miramos si cada produccion pertenece a otra categoría que no sea la de por defecto
                             if (this.#getProductionPosition(production, this.#categories[index].productions) > -1) {
                                 insertInDefault = false;
                                 break;
@@ -648,13 +660,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
+            //funcion para añadir usuarios al sistema
             addUser(user) {
                 if (!(user instanceof User)) {
                     throw new UserException();
                 }
                 let position = this.#getUserPosition(user);
                 if (position === -1) {
-                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    // Añade objeto literal con una propiedad para los usuarios y un array para las producciones dentro de la categoría
                     this.#user.push(
                         {
                             user: user,
@@ -668,6 +681,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+            //funcion para borrar al usuario del sistema
             removeUser(user) {
                 if (!(user instanceof User)) {
                     throw new UserException();
@@ -675,14 +689,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 let position = this.#getUserPosition(user);
                 if (position !== -1) {
 
-                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    // Recogemos todas los índices de los usuarios menos las de por defecto y la que estamos borrando
                     let restPositions = Array.from(Array(this.#user.length), (el, i) => i);
                     restPositions.splice(position, 1);
                     restPositions.splice(0, 1);
-                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    // Recorremos todas las producciones de la categoría que estamos borrando 
                     for (let production of this.#user[position].productions) {
                         let insertInDefault = true;
-                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                        for (let index of restPositions) { // Chequeamos si cada produccion pertenece a otro usuario que no sea la de por defecto
                             if (this.#getProductionPosition(production, this.#user[index].productions) > -1) {
                                 insertInDefault = false;
                                 break;
@@ -698,6 +712,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+
+            //funcion para añadir producciones al sistema
             addProds(production) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -714,6 +730,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this.#productions.length;
             }
 
+
+            //funcion para borrar producciones
             removeProd(production) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -735,6 +753,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
+            //funcion para asignar producciones a una categoria
             assingCategory(production, category = this.defaultCategory) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -770,6 +789,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+            //funcion para quitar producciones de una categoria
             DeassingCategory(production, category = this.defaultCategory) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -799,6 +819,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
+            //funcion para asignar porducciones a un director
             assignDirector(production, director = this.defaultDirectors) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -835,6 +856,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
+            //funcion para quitar produccion de un director
             DeassignDirector(production, director = this.defaultDirectors) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -864,6 +886,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+
+            //funcion para asignar una prod a un actor
             assignActor(production, actor = this.defaultActor) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -899,6 +923,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+
+            //funcion para quitar una prod de un actor
             DeassignActor(production, actor = this.defaultActor) {
                 if (!(production instanceof Production)) {
                     throw new ProductionException();
@@ -931,7 +957,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
-            //Devuelve todas las imágenes de una determinada categoría
+            //Devuelve todas las producciones de una determinada categoría
             * getProdsByCategory(category) {
                 if (!(category instanceof Category)) {
                     throw new CategoryException();
@@ -945,6 +971,8 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
             }
 
+
+            //devuelve las pordcuciones de un director
             * getProdsByDirector(director) {
                 if (!(director instanceof Person)) {
                     throw new PersonException();
@@ -958,7 +986,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
             }
 
 
-
+            //deevuelve las prodcucciones de un actor
             * getProdsByActor(actor) {
                 if (!(actor instanceof Person)) {
                     throw new PersonException();
@@ -971,7 +999,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 }
             }
 
-            //LA DE ARRIBA AL REVES tiene que darme los actores de una prod
+            //devuelve el cast de una produccion
 
             * getCastByProd(prod) {
                 if (!(prod instanceof Production)) {
@@ -1000,14 +1028,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
 
 
 
-
+            //funcion para añadir actores al sistema
             addActors(actors) {
                 if (!(actors instanceof Person)) {
                     throw new PersonException();
                 }
                 let position = this.#getActorPosition(actors);
                 if (position === -1) {
-                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    // Añade objeto literal con una propiedad para los actores y un array para las producciones
                     this.#actors.push(
                         {
                             actors: actors,
@@ -1021,6 +1049,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+            //funcion que borra un acctor del sistema
             removeActors(actors) {
                 if (!(actors instanceof Person)) {
                     throw new PersonException();
@@ -1028,14 +1057,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 let position = this.#getActorPosition(actors);
                 if (position !== -1) {
 
-                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                    
                     let restPositions = Array.from(Array(this.#actors.length), (el, i) => i);
                     restPositions.splice(position, 1);
                     restPositions.splice(0, 1);
-                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                   
                     for (let production of this.#actors[position].productions) {
                         let insertInDefault = true;
-                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                        for (let index of restPositions) { 
                             if (this.#getProductionPosition(production, this.#actors[index].productions) > -1) {
                                 insertInDefault = false;
                                 break;
@@ -1051,14 +1080,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
-
+            //añade un director al sistema
             addDirectors(directors) {
                 if (!(directors instanceof Person)) {
                     throw new PersonException();
                 }
                 let position = this.#getDirectorPosition(directors);
                 if (position === -1) {
-                    // Añade objeto literal con una propiedad para la categoría y un array para las imágenes dentro de la categoría
+                    
                     this.#directors.push(
                         {
                             directors: directors,
@@ -1072,6 +1101,7 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 return this;
             }
 
+            //borra un director del sistema
             removeDirectors(directors) {
                 if (!(directors instanceof Person)) {
                     throw new PersonException();
@@ -1079,14 +1109,14 @@ let VideoSystem = (function () { //La función anónima devuelve un método getI
                 let position = this.#getDirectorPosition(directors);
                 if (position !== -1) {
 
-                    // Recogemos todas los índices de las categorías menos las de por defecto y la que estamos borrando
+                   
                     let restPositions = Array.from(Array(this.#directors.length), (el, i) => i);
                     restPositions.splice(position, 1);
                     restPositions.splice(0, 1);
-                    // Recorremos todas las imágenes de la categoría que estamos borrando 
+                    
                     for (let production of this.#directors[position].productions) {
                         let insertInDefault = true;
-                        for (let index of restPositions) { // Chequeamos si cada imagen pertenece a otra categoría que no sea la de por defecto
+                        for (let index of restPositions) { 
                             if (this.#getProductionPosition(production, this.#directors[index].productions) > -1) {
                                 insertInDefault = false;
                                 break;
